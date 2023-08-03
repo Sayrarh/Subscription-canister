@@ -1,0 +1,13 @@
+{
+  "canisters": {
+    "subscription_payment": {
+      "main": "src/index.ts",
+      "type": "custom",
+      "build": "npx azle subscription_payment",
+      "root": "src",
+      "ts": "src/index.ts",
+      "candid": "src/index.did",
+      "wasm": ".azle/subscription_payment/subscription_payment.wasm.gz"
+    }
+  }
+}
