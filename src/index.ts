@@ -57,9 +57,6 @@ export function createSubscription(payload: SubscriptionPayload): Result<Subscri
   return Result.Ok(subscribe);
 }
 
-/**
- * 
- */
 
 $query;
 export function getSubscription(id: string): Result<Subscription, string> {
@@ -85,11 +82,17 @@ export function getSubscriptionsBySubscriber(subscriber: Principal): Result<Vec<
   return Result.Ok<Vec<Subscription>, string>(subscriptions);
 }
 
-// Function to get all subscriptions
+// Function to get all available subscriptions
 $query;
 export function getAllSubscriptions(): Result<Vec<Subscription>, string> {
   return Result.Ok<Vec<Subscription>, string>(subscriptionSTorage.values());
 }
+
+
+/**
+ * Function that allows users to cancel their subscription.
+ * It refunds the remaining subscription period's payment to the user
+ */
 
 $update;
 export function cancelSupscription(id: string): Result<Subscription, string> {
@@ -107,6 +110,12 @@ export function cancelSupscription(id: string): Result<Subscription, string> {
       )
   });
 }
+
+
+/**
+ * Allows users to renew their subscription by sending the subscription price to add 
+ * It extends the subscription expiry timestamp by 30 days from the current expiry time
+ */
 
 $update;
 export function renewSubscription(id: string, price: number): Result<Subscription, string> {
@@ -130,6 +139,11 @@ export function renewSubscription(id: string, price: number): Result<Subscriptio
   return Result.Err<Subscription, string>(`Subscription id=${id} not found`);
 }
 
+
+/**
+ * Function that allows the service owner to withdraw the canister's balance 
+ * i.e. the accumulated subscription payments
+ */
 $update;
 export function withdrawFunds(id: string): Result<Subscription, string> {
   const subscription = getSubscription(id);
