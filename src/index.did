@@ -10,12 +10,14 @@ type Subscription = record {
 type SubscriptionPayload = record { days : nat16; price : float32 };
 type _AzleResult = variant { Ok : Subscription; Err : text };
 type _AzleResult_1 = variant { Ok : vec Subscription; Err : text };
+type _AzleResult_2 = variant { Ok : text; Err : text };
 service : () -> {
   cancelSupscription : (text) -> (_AzleResult);
   createSubscription : (SubscriptionPayload) -> (_AzleResult);
   getAllSubscriptions : () -> (_AzleResult_1) query;
   getSubscription : (text) -> (_AzleResult) query;
   getSubscriptionsBySubscriber : (principal) -> (_AzleResult_1) query;
+  init : () -> (_AzleResult_2);
   renewSubscription : (text, float64) -> (_AzleResult);
   withdrawFunds : (text) -> (_AzleResult);
 }

@@ -1,5 +1,6 @@
 import {
   $query,
+  $init,
   $update,
   Record,
   StableBTreeMap,
@@ -32,6 +33,19 @@ type SubscriptionPayload = Record<{
   days: nat16;
 }>;
 
+
+let subscriptionOwner: Principal;
+let initialized: boolean = false;
+
+
+$update;
+export function init(): Result<string, string> {
+  if (!initialized) {
+    subscriptionOwner = ic.caller();
+  }
+
+  return Result.Ok("initialized");
+}
 
 const subscriptionExpiry: nat16 = 2592000;
 
@@ -75,12 +89,14 @@ export function getSubscription(id: string): Result<Subscription, string> {
   });
 }
 
+
 // Function to get all subscriptions of a subscriber
 $query;
 export function getSubscriptionsBySubscriber(subscriber: Principal): Result<Vec<Subscription>, string> {
   const subscriptions = subscriptionSTorage.values().filter(sub => sub.subscriber.toString() === subscriber.toString());
   return Result.Ok<Vec<Subscription>, string>(subscriptions);
 }
+
 
 // Function to get all available subscriptions
 $query;
@@ -150,12 +166,12 @@ export function withdrawFunds(id: string): Result<Subscription, string> {
 
   if (subscription.Ok) {
 
-    if (subscription.Ok.subscriber.toString() !== ic.caller().toString()) {
-      return Result.Err<Subscription, string>("Not authorised subscriber");
+    if (subscriptionOwner.toString() !== ic.caller().toString()) {
+      return Result.Err<Subscription, string>("Not owner");
     }
     const updateSubscription = {
       ...subscription.Ok,
-      amount: 0,
+      price: 0,
     };
 
     subscriptionSTorage.insert(updateSubscription.id, updateSubscription);
